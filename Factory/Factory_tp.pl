@@ -1,32 +1,32 @@
 #---------------------[ GLOBAL ]---------------------
 use strict; use warnings;
 
-my %hShapes = (
-  circle    => sub {Circle->new()},
-  rectangle => sub {Rectangle->new()},
-  square    => sub {Square->new()},
-  triangle  => sub {Triangle->new()},
-);
-
-sub getShapeNames {sort keys %hShapes}
-
 #---------------------[ CLASSES ]---------------------
 package ShapeFactory {
-sub new {bless {}, shift};
-sub getShape {
-  my ($self, $shape) = @_;
-  die "no shape defined" unless $shape;
-  die "no shape defined in table:$shape" unless my $rc1 = $hShapes{lc($shape)};
-  $rc1->();
-}
+  #use Shape
+  my %hShapes = (
+    circle    => sub {Circle->new()},
+    rectangle => sub {Rectangle->new()},
+    square    => sub {Square->new()},
+    triangle  => sub {Triangle->new()},
+  );
+
+  sub getShapeNames {sort keys %hShapes}
+
+  sub new {bless {}, shift};
+  sub getShape {
+    my ($self, $shape) = @_;
+    die "no shape defined" unless $shape;
+    die "no shape defined in table:$shape" unless my $rc1 = $hShapes{lc($shape)};
+    $rc1->();
+  }
 }
 
 package Shape {
-our @ISA=qw(ShapeFactory);
-sub new     {bless {}, shift};
-sub draw    {printf "draw:Shape:%s\n", ref $_[0]}
-sub animate {printf "animate:Shape:%s\n", ref $_[0]}
-sub print   {printf "print:Shape:%s\n", ref $_[0]}
+  sub new     {bless {}, shift};
+  sub draw    {printf "draw:Shape:%s\n", ref $_[0]}
+  sub animate {printf "animate:Shape:%s\n", ref $_[0]}
+  sub print   {printf "print:Shape:%s\n", ref $_[0]}
 }
 
 package Circle    { 
@@ -47,7 +47,7 @@ package Triangle  { our @ISA=qw(Shape) }
 
 #---------------------[ main ]---------------------
 my $oShapeFactory = ShapeFactory->new();
-for (getShapeNames()) {
+for ($oShapeFactory->getShapeNames()) {
   my $oShape = $oShapeFactory->getShape($_);
   $oShape->draw();
   $oShape->print();

@@ -1,44 +1,17 @@
 use strict; use warnings;
 
+
 package MealBuilder {
   sub new {bless {}, shift}
 
   sub prepareVegMeal {
     my $meal = Meal->new();
-    $meal->addItem(VegBurger->new());
-    $meal->addItem(Coffee->new());
     return $meal;
   }   
 
   sub prepareNonVegMeal {
     my $self = shift;
     my $meal = Meal->new();
-    $meal->addItem(ChickenBurger->new(@_));
-    $meal->addItem(Pepsi->new(
-        size =>'large',
-      )
-    );
-    $meal->addItem(Fries->new(
-        size => 'large',
-      )
-    );
-    return $meal;
-  }
-  sub prepareKidsNonVegMeal {
-    my $meal = Meal->new();
-    $meal->addItem(ChickenBurger->new(
-        size =>'small',
-      )
-    );
-    $meal->addItem(Pepsi->new(
-        size =>'small',
-      )
-    );
-    $meal->addItem(Fries->new(
-        size =>'small',
-      )
-    );
-    $meal->addItem(KidsToy->new());
     return $meal;
   }
 }
@@ -96,34 +69,6 @@ package Burger {
   sub price {die("abstract")}
 }
 
-
-package Fries {
-  our @ISA=qw(Item);
-  sub new {
-    my $self = shift; 
-    bless {
-      name => 'Fries',
-      price=> 1.5,
-      packing => SmallBox->new(),
-      @_
-    }, $self
-  }
-  sub price {die("abstract")}
-}
-
-package KidsToy {
-  our @ISA=qw(Item);
-  sub new {
-    my $self = shift; 
-    bless {
-      name => 'KidsToy',
-      price=> -1.5,
-      packing => SmallToyBox->new(),
-      @_
-    }, $self
-  }
-  sub price {die("abstract")}
-}
 
 package VegBurger {
   our @ISA=qw(Burger);
@@ -237,21 +182,6 @@ package Coffee {
 
 #---------------------[ main ]---------------------
 my $oMealBuilder = MealBuilder->new ();
-my $vegMeal = $oMealBuilder->prepareVegMeal(size => 'large');
-print ("------- Veg Meal ----------\n");
-$vegMeal->showItems();
-printf "Total Cost: %0.2f\n", $vegMeal->getCost();
-
-my $nonVegMeal = $oMealBuilder->prepareNonVegMeal(size => 'large');
-print ("------- Non-Veg Meal ----------\n");
-$nonVegMeal->showItems();
-printf "Total Cost: %0.2f\n" , $nonVegMeal->getCost();
-
-my $kidsNonVegMeal = $oMealBuilder->prepareKidsNonVegMeal();
-print ("------- Kids Non-Veg Meal ----------\n");
-$kidsNonVegMeal->showItems();
-printf "Total Cost: %0.2f\n" , $kidsNonVegMeal->getCost();
 
 $DB::single = 1; 
 $DB::single = 1; 
-
