@@ -9,6 +9,7 @@ package AbstractWidget {
 
 package AndroidWidget { use base 'AbstractWidget'}
 package LinuxWidget   { use base 'AbstractWidget'}
+package MacWidget   { use base 'AbstractWidget'}
 
 
 1;

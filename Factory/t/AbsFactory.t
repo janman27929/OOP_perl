@@ -27,7 +27,14 @@ is $o1->num_products, 4, 'got 4 products after delete for linux';
 $o1->add_product('Textbox');
 is $o1->num_products, 5, 'got 5 products for linux';
 is ref $o1->get_product(-1), 'LinuxTextbox', 'verified last product added'; 
-
+$o1->update_product(-1, $o1->make_product('Widget'));
+is ref $o1->get_product(-1), 'LinuxWidget', 'verified last product updated is a Widget'; 
+is $o1->num_products, 5, 'got 5 products for linux';
+dies_ok {$m1->add_product('Wooget')} 'dies on adding Wooget to Mac';
+dies_ok {$m1->delete_product('Wooget')} 'dies on deleting Wooget to Mac';
+like $@, qr#FAIL: bad nPos#,'confirm: dies on deleting Wooget to Mac';
+my $oMacWidget = $m1->make_product('Widget');
+is ref $oMacWidget, 'MacWidget', 'got MacWidget from make_product';
 $DB::single = 1; 
 $DB::single = 1; 
 done_testing;
