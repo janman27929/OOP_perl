@@ -1,5 +1,6 @@
 use strict; use warnings;
 
+
 package AbstractFactory {
   my %factories = (
     Linux   => sub {LinuxFactory->new(@_)},
@@ -8,11 +9,29 @@ package AbstractFactory {
     Android => sub {AndroidFactory->new(@_)},
   );
 
+=pod
+  sub getFactory {
+    my $self = shift;
+    my %hParms = @_;
+    my $factory = $hParms{factory};
+    die ("FAIL: no factory\n") unless $factory;
+    if ($factory =~ /^Linux$/) {
+      return LinuxFactory->new(@_);
+    } elsif ($factory =~ /^Windows$/) {
+      return WindowsFactory->new(@_);
+    } elsif ($factory =~ /^Mac$/) {
+      return MacFactory->new(@_);
+    } else {
+      die ("FAIL: Unsupported factory:$factory:\n");
+    }
+  }
+=cut
+  
   sub getFactory {
     my $self = shift;
     my %hParms = @_;
     die ("FAIL: no factory\n") unless $hParms{factory}; 
-    die ("FAIL: unsupported factory: $hParms{factory}:\n") unless my $rcFactory = $factories{$hParms{factory}}; 
+    die ("FAIL: Unsupported factory: $hParms{factory}:\n") unless my $rcFactory = $factories{$hParms{factory}}; 
     $rcFactory->(@_);
   }
 
@@ -24,6 +43,7 @@ package AbstractFactory {
     my ($self, $factory) = @_;
     (grep {$_ =~ /$factory/} keys %factories) ? 1 : 0;
   }
+  
 }
 
 package BigFactory {
@@ -37,7 +57,14 @@ package CommonFactory  {
   sub factory       { shift->{factory}  }
 
   sub get_product   { $_[0]->products->[$_[1]] }    
-  sub get_products  { shift->products }    
+  sub get_products  { wantarray ? @{shift->products} : shift->products }    
+
+  sub get_product_list   { 
+    my $self = shift;
+    my $cList = '';    
+    $cList .= (ref $_) ."\n" for ($self->get_products);
+    return $cList;
+  }    
  
   sub add_products { 
     my ($self, $raProducts) = @_;
@@ -114,7 +141,7 @@ package WindowsFactory {
 package MacFactory {
   use base 'CommonFactory';
   my $factory = 'Mac';
-  my @aProducts = qw(Button CashMachine);
+  my @aProducts = qw(Button );
   sub new {$_[0]->SUPER::new($factory, \@aProducts)}  
 }
 
@@ -130,9 +157,9 @@ package Products  {
 
   sub isValidProduct   {
     my ($self, $cName) = @_;
+    return 0 unless $cName;
     return (grep {$_ =~ /$cName/} @aProducts) ? 1 : 0;
-  }  
-
+  } 
 }
 
 package AbstractButton {
@@ -142,6 +169,11 @@ package AbstractButton {
   sub focus         { (ref $_[0]) ."::focus()"}
   sub unfocus       { (ref $_[0]) ."::unfocus()"}
   sub handleEvent   { (ref $_[0]) ."::handleEvent()"}
+}
+
+package MacButton {
+  use base 'AbstractButton';
+  sub new {my $class = shift; bless {@_},$class};
 }
 
 package LinuxButton {
@@ -159,10 +191,6 @@ package AndroidButton {
   sub new {my $class = shift; bless {@_},$class};
 }
 
-package MacButton {
-  use base 'AbstractButton';
-  sub new {my $class = shift; bless {@_},$class};
-}
 #-------------
 package AbstractWooget {
   sub blur          { (ref $_[0]) ."::blur()"}
@@ -274,7 +302,5 @@ package MacCashMachine {
   sub new     { my $class= shift; bless{}, $class};
 }
 
+
 1;
-
-
-
