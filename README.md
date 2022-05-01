@@ -1,6 +1,6 @@
 OOP_Perl
 
-```Python
+```Perl
 a, b = 0, 1
 while b < 10:
     print(b)
